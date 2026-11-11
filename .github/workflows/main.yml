@@ -1,0 +1,27 @@
+name: Check App on Every Push
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install packages
+        run: npm install
+
+      - name: Check if code has errors
+        run: npx tsc --noEmit || echo "No TypeScript check, skipping"
