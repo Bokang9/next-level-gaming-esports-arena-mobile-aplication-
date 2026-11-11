@@ -78,3 +78,56 @@ function AppHeader({ title, onNavigate }) {
     </View>
   );
 }
+function ActionButton({ title, onPress, secondary = false, style }) {
+  return (
+    <TouchableOpacity
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[
+        styles.actionButton,
+        secondary ? styles.secondaryButton : styles.primaryButton,
+        style,
+      ]}
+    >
+      <Text style={secondary ? styles.secondaryButtonText : styles.primaryButtonText}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function ServiceCard({ item, onDetails, onToggle, selected }) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.serviceHeading}>
+        <View style={styles.iconBox}>
+          <MaterialCommunityIcons
+            name={item.icon}
+            size={32}
+            color={item.category === 'Experience' ? COLORS.purple : COLORS.cyan}
+          />
+        </View>
+        <View style={styles.serviceTitleWrap}>
+          <Text style={styles.serviceTitle}>{item.name}</Text>
+          <Text style={styles.price}>{formatRand(item.price)}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.bodyText}>{item.description}</Text>
+
+      <View style={styles.buttonRow}>
+        <ActionButton
+          title="View details"
+          secondary
+          onPress={() => onDetails(item)}
+          style={styles.flexButton}
+        />
+        <ActionButton
+          title={selected ? 'Added ✓' : '+ Add to booking'}
+          onPress={() => onToggle(item.id)}
+          style={styles.flexButton}
+        />
+      </View>
+    </View>
+  );
+}
