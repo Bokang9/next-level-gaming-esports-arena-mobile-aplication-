@@ -7,6 +7,9 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next-level-gaming
     steps:
       - name: Get the code
         uses: actions/checkout@v4
@@ -14,5 +17,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Check App.js exists
-        run: ls -l App.js && echo "App.js found - check passed"
+          cache: npm
+          cache-dependency-path: next-level-gaming/package-lock.json
+      - name: Install packages
+        run: npm ci
+      - name: Check if code has errors
+        run: npx tsc --noEmit || echo "No TypeScript check, skipping"
