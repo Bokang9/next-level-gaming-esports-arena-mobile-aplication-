@@ -478,3 +478,424 @@ function ContactScreen() {
     </View>
   );
 }
+paste this export default function App() {
+  const [page, setPage] = useState('Home');
+  const [detailItem, setDetailItem] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const selectedCount = useMemo(() => selectedIds.length, [selectedIds]);
+
+  const navigate = (nextPage) => {
+    setDetailItem(null);
+    setPage(nextPage);
+  };
+
+  const toggleBooking = (id) => {
+    setSelectedIds((current) =>
+      current.includes(id)
+        ? current.filter((selectedId) => selectedId !== id)
+        : [...current, id]
+    );
+  };
+
+  const openDetails = (item) => setDetailItem(item);
+
+  let title = detailItem ? 'Package Details' : page;
+  if (detailItem?.category === 'Experience') title = 'Experience Details';
+
+  let content;
+  if (detailItem) {
+    content = (
+      <DetailsScreen
+        item={detailItem}
+        onBack={() => setDetailItem(null)}
+        onToggle={toggleBooking}
+        selectedIds={selectedIds}
+        navigate={navigate}
+      />
+    );
+  } else if (page === 'Home') {
+    content = (
+      <HomeScreen
+        navigate={navigate}
+        onDetails={openDetails}
+        onToggle={toggleBooking}
+        selectedIds={selectedIds}
+      />
+    );
+  } else if (page === 'About Us') {
+    content = <AboutScreen />;
+  } else if (page === 'Packages') {
+    content = (
+      <ServicesScreen
+        category="Package"
+        onDetails={openDetails}
+        onToggle={toggleBooking}
+        selectedIds={selectedIds}
+      />
+    );
+  } else if (page === 'Experiences') {
+    content = (
+      <ServicesScreen
+        category="Experience"
+        onDetails={openDetails}
+        onToggle={toggleBooking}
+        selectedIds={selectedIds}
+      />
+    );
+  } else if (page === 'Calculate Fees') {
+    content = <FeesScreen selectedIds={selectedIds} onToggle={toggleBooking} />;
+  } else {
+    content = <ContactScreen />;
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <AppHeader title={title} onNavigate={navigate} />
+
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {content}
+      </ScrollView>
+
+      {!detailItem && (
+        <View style={styles.bottomNav}>
+          {tabs.map((tab) => {
+            const active = page === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => navigate(tab.id)}
+                style={styles.tab}
+              >
+                <View>
+                  <MaterialCommunityIcons
+                    name={tab.icon}
+                    size={23}
+                    color={active ? COLORS.green : COLORS.muted}
+                  />
+                  {tab.id === 'Calculate Fees' && selectedCount > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{selectedCount}</Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={[styles.tabLabel, active && styles.activeTabLabel]}>
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  headerWrap: {
+    zIndex: 2,
+    backgroundColor: COLORS.surface,
+  },
+  header: {
+    minHeight: 66,
+    paddingHorizontal: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerTitle: {
+    color: COLORS.white,
+    fontSize: 23,
+    fontWeight: '800',
+    flex: 1,
+  },
+  menuButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surfaceRaised,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 60,
+    right: 12,
+    width: 210,
+    backgroundColor: COLORS.surfaceRaised,
+    borderColor: COLORS.border,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingVertical: 6,
+    zIndex: 10,
+    elevation: 8,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  dropdownText: {
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 18,
+    paddingBottom: 28,
+  },
+  hero: {
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderColor: COLORS.purple,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    padding: 22,
+    marginBottom: 24,
+  },
+  heroTitle: {
+    marginTop: 10,
+    color: COLORS.cyan,
+    fontWeight: '900',
+    fontSize: 38,
+    textAlign: 'center',
+  },
+  heroSubtitle: {
+    color: COLORS.green,
+    fontWeight: '800',
+    fontSize: 16,
+    letterSpacing: 1.5,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  card: {
+    backgroundColor: COLORS.surface,
+    borderColor: COLORS.border,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    padding: 18,
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    color: COLORS.white,
+    fontSize: 24,
+    fontWeight: '800',
+    marginTop: 6,
+    marginBottom: 14,
+  },
+  subheading: {
+    color: COLORS.white,
+    fontSize: 19,
+    fontWeight: '800',
+    marginTop: 18,
+    marginBottom: 10,
+  },
+  serviceHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  iconBox: {
+    width: 66,
+    height: 66,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: COLORS.cyan,
+    backgroundColor: '#0c111b',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  serviceTitleWrap: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  serviceTitle: {
+    color: COLORS.white,
+    fontSize: 19,
+    fontWeight: '800',
+  },
+  price: {
+    color: COLORS.green,
+    fontSize: 20,
+    fontWeight: '800',
+    marginTop: 3,
+  },
+  bodyText: {
+    color: COLORS.muted,
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 10,
+  },
+  includeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    marginVertical: 5,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  flexButton: {
+    flex: 1,
+  },
+  actionButton: {
+    minHeight: 50,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  primaryButton: {
+    backgroundColor: COLORS.green,
+  },
+  primaryButtonText: {
+    color: COLORS.darkText,
+    fontSize: 16,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  secondaryButton: {
+    borderWidth: 1.5,
+    borderColor: COLORS.cyan,
+    backgroundColor: 'transparent',
+  },
+  secondaryButtonText: {
+    color: COLORS.cyan,
+    fontSize: 16,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 48,
+    gap: 9,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  checkboxLabel: {
+    color: COLORS.white,
+    fontSize: 14,
+    flex: 1,
+  },
+  checkboxPrice: {
+    color: COLORS.green,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  label: {
+    color: COLORS.white,
+    fontSize: 15,
+    fontWeight: '700',
+    marginTop: 10,
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: COLORS.surfaceRaised,
+    borderColor: COLORS.border,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  table: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginTop: 6,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    padding: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  tableHeader: {
+    backgroundColor: COLORS.surfaceRaised,
+  },
+  tableHeaderText: {
+    color: COLORS.cyan,
+    fontWeight: '800',
+    flex: 1,
+  },
+  tableText: {
+    color: COLORS.white,
+    fontSize: 14,
+    flex: 1,
+  },
+  totalRow: {
+    backgroundColor: '#10251b',
+  },
+  totalText: {
+    color: COLORS.green,
+    fontWeight: '900',
+    fontSize: 15,
+    flex: 1,
+  },
+  mutedText: {
+    color: COLORS.muted,
+    fontSize: 13,
+    lineHeight: 20,
+    marginTop: 12,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surface,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingTop: 8,
+    paddingBottom: 5,
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 50,
+  },
+  tabLabel: {
+    color: COLORS.muted,
+    fontSize: 10,
+    marginTop: 3,
+    textAlign: 'center',
+  },
+  activeTabLabel: {
+    color: COLORS.green,
+    fontWeight: '800',
+  },
+  badge: {
+    position: 'absolute',
+    right: -9,
+    top: -5,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    paddingHorizontal: 3,
+    backgroundColor: COLORS.purple,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontWeight: '800',
+  },
+}); 
