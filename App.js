@@ -478,7 +478,8 @@ function ContactScreen() {
     </View>
   );
 }
-paste this export default function App() {
+
+export default function App() {
   const [page, setPage] = useState('Home');
   const [detailItem, setDetailItem] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
